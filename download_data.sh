@@ -33,3 +33,5 @@ for i in "${i_values[@]}"; do
     wget -P "${destination}/webdataset_avg_split/test" "$url"
   done
 done
+
+wget -P "${destination}" "https://huggingface.co/datasets/pscotti/naturalscenesdataset/resolve/main/COCO_73k_annots_curated.npy"
