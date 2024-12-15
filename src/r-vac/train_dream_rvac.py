@@ -52,6 +52,7 @@ parser.add_argument("--use_projector", action=argparse.BooleanOptionalAction, de
 parser.add_argument("--plot_umap", action=argparse.BooleanOptionalAction, default=True, help="Plot UMAP plots alongside reconstructions")
 parser.add_argument("--ckpt_saving", action=argparse.BooleanOptionalAction, default=True)
 parser.add_argument("--save_at_end", action=argparse.BooleanOptionalAction, default=False)
+parser.add_argument("--ckpt_path", type=str, default=None, help="Path to the checkpoint to resume training")
 args = parser.parse_args()
 
 # create global variables without the args prefix
@@ -210,8 +211,26 @@ else:
 print("clip_caps.shape:", clip_caps.shape)
 
 # main loop for training
-epoch = 0
-losses, val_losses, lrs = [], [], []
+# Load checkpoint if provided
+if ckpt_path:
+    if os.path.isfile(ckpt_path):
+        print(f"Loading checkpoint from {ckpt_path}")
+        checkpoint = torch.load(ckpt_path, map_location=device)
+        voxel2clip.load_state_dict(checkpoint['model_state_dict'])
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
+        epoch = checkpoint['epoch'] + 1
+        losses = checkpoint['train_losses']
+        val_losses = checkpoint['val_losses']
+        lrs = checkpoint['lrs']
+        print(f"Resumed training from epoch {epoch}")
+    else:
+        print(f"No checkpoint found at {ckpt_path}, starting from scratch")
+        epoch = 0
+        losses, val_losses, lrs = [], [], []
+else:
+    epoch = 0
+    losses, val_losses, lrs = [], [], []
 nce_losses, val_nce_losses = [], []
 sim_losses, val_sim_losses = [], []
 best_val_loss = 1e9
