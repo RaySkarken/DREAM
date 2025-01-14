@@ -52,7 +52,7 @@ R-VAC (Reverse VAC) replicates the opposite operations of the VAC brain region, 
 
 To train R-VAC, please first download "Natural Scenes Dataset" and "COCO_73k_annots_curated.npy" file from [NSD HuggingFace](https://huggingface.co/datasets/pscotti/naturalscenesdataset/tree/main) to `nsd_data`, then use the following command to run R-VAC training
 ```
-python train_dream_rvac.py --data_path nsd_data
+python train_dream_rvac.py --data_path nsd_data --ckpt_path <path_to_checkpoint>
 ```
 
 We basically adopt the same code as [MindEye](https://medarc-ai.github.io/mindeye/)'s high-level pipeline without the diffusion prior and utilize different dimensions. Specifically, fMRI voxels are processed by the MLP backbone and MLP projector to produce the CLIP fMRI embedding, and are trained with a data-augmented contrastive learning loss. The additional MLP projector helps capture meaningful semantics. We did not employ a Prior. The role of the Prior (regardless of the performance gain in MindEye) appears to be substitutable by the MLP projector with MSE losses. In our work, we focus solely on text embedding and disjointed issues of text and image embeddings are not our concerns.
